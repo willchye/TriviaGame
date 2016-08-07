@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Javascript Quiz</title>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+	<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+<h1>Javascript Quiz</h1>
+<strong><p>by Will Chye</p></strong>
+</header>
+
+<section>
+<div class="row" id=question>
+		<button id="myButton" class="start">Start</button>
+</div>
+<div class="row" id=buttons>
+
+</div>
+
+</section>
+
+
+<script>
+
+//Global vaiables============================================================
+//set variables for question index to index through the questions
+//set variable for timer countdown
+//set variable for correct and wrong answers count
+
+var currentQuestionNum = 0;
+var counter = 10;
+var correct = 0;
+var wrong = 0;
+
+//when click on start button it will loadquestion function
+$(document).on('click', '.start', function() {
+
+  loadquestion();
+});
+
+//when click on a button answer it will load userClickresult function
+$(document).on('click', '.answerButton', function() {
+  userclickresult();
+});
+
+
+//Object array with questions ==============================================================================================================
+
+var questions = [{
+  question: "Inside which HTML element tag do we put in the JavaScript tag?",
+  answers: ["js", "script", "code", "javascript"],
+  correctAnswer: "script",
+
+}, {
+  question: "How do you call test class attribute from html",
+  answers: [".test", "#test", "@test","test"],
+  correctAnswer: ".test",
+
+}, {
+  question: 'What is the correct syntax for referring to an external script called "xxx.js"?',
+  answers: ['script href', 'script src', 'script name', 'script link'],
+  correctAnswer: 'script src',
+
+}, {
+  question: 'What is JSON?',
+  answers: ["Javascript oriented note", "Javascript object note", "Javascript object name", "Javascript object notation"],
+  correctAnswer: "Javascript object notation",
+
+}, {
+  question: ' How do you create a function in JavaScript?',
+  answers: ["function myFunction()", "function = myFunction()","function:myFunction()"],
+  correctAnswer: "function myFunction()",
+
+}, {
+  question: 'which of the following is correct for the if not equal to condition',
+  answers: ["!=!", "<>", "!=", "=!"],
+  correctAnswer: "!=",
+
+}, {
+  question: "How do you round the number 3.25, to the nearest integer?",
+  answers: ["Math(3.25)", "Math.round(3.25)", "round(3.25)", "Math.rnd(3.25)"],
+  correctAnswer: "Math.round(3.25)",
+
+}, {
+  question: "What sign represents JQUERY",
+  answers: ["$", "$$", "S", "#"],
+  correctAnswer: "$",
+
+}, {
+	question:"end of question",
+	answers:[],
+	correctAnswer:"",
+}
+];
+
+
+//this will load questions onto the screen
+//set timer interval to run function countdown and set at 1000ms
+//load questions[currentnumber].questions to question html and put the timing underneath it
+//prepend buttons(put on top because when new set loads it will stay on top instead of being pushed downward from previous buttons after remove previous buttons)
+//created button and push the answer's arrays onto each button
+function loadquestion(){
+		timer = setInterval(countdown, 1000);
+		$("#question").html("<h2>"+questions[currentQuestionNum].question+"</h2>");
+		$('#question').append('<h2>Time Remaining: <span id="counterNum">10</span> Seconds</h2>');
+		for(i=0; i<questions[0].answers.length; i++){
+		$("#buttons").prepend('<button id="myButton" class="answerButton" ' + 'data-name="' + questions[currentQuestionNum].answers[i] + '">'+ questions[currentQuestionNum].answers[i]+'</button>'+'<br>'+'</br>');
+	}
+};
+
+//when button click will compare the clicked button value to correct answerButton to decide if its correct or wrong
+function userclickresult(){
+
+	$(".answerButton").on('click', function(){
+		if($(this).data("name")==questions[currentQuestionNum].correctAnswer){
+
+			answeredCorrect();
+		}
+		else{
+			answeredWrong()
+
+		}
+	});
+}
+
+//adds the correct counter, stops the timer, reset timer to 0 and remove existing buttons and load next questions again to prepend new buttons
+function answeredCorrect(){
+
+	correct++;
+	clearInterval(timer);
+	$('#counterNum').html("0");
+	$(".answerButton").remove();
+	$("#buttons").html('<br>'+'<h2><span class="M">Correct</span></h2>');
+	setTimeout(nextQuestion, 2000);
+}
+
+
+function answeredWrong(){
+
+	wrong++;
+	clearInterval(timer);
+	$('#counterNum').html("0");
+	$(".answerButton").remove();
+	$("#buttons").html('<br>'+'<h2><span class="M">Wrong Answer</span></h2>');
+	$("#buttons").append('<span class="M">The Correct Answer was: ' + questions[currentQuestionNum].correctAnswer + '</span>');
+	setTimeout(nextQuestion, 2000);
+}
+
+//remove the M class words from previous question's answer wrong/right's answer and timeout answer page
+//if question number is 8 - 1 (because index start at 0) then run finish
+function nextQuestion(){
+
+	 $(".M").remove();
+	counter = 10;
+  $('#counterNum').html(counter);
+	$(".answerButton").remove();
+	currentQuestionNum++;
+	loadquestion();
+
+	if(currentQuestionNum === 8){
+		finish();
+	}
+}
+
+
+function countdown(){
+
+	 counter--;
+	 $('#counterNum').html(counter);
+	 if (counter === 0){
+		 timeout();
+	 }
+ }
+
+
+function timeout (){
+
+     clearInterval(timer);
+     $('#counterNum').html(counter);
+		 $(".answerButton").remove();
+     $("#buttons").html('<br>'+'<h2><span class="M">Times up</span></h2>');
+     $("#buttons").append('<span class="M">The Correct Answer was: ' + questions[currentQuestionNum].correctAnswer + '</span>');
+		 setTimeout(nextQuestion, 2000);
+
+   }
+
+
+function 	finish(){
+
+	clearInterval(timer);
+	$('#counterNum').html("0");
+	$("#buttons").html('<br>'+'<h2><span class="M">Finished</span></h2>');
+	$("#buttons").append('<span class="M">Answered Correctly:</span>'+ correct);
+	$("#buttons").append('<br>'+'<span class="M">Answered Incorrectly:</span>'+ wrong);
+}
+
+
+
+</script>
+
+</body>
+</html>
